@@ -1,0 +1,36 @@
+# ci-cd.yaml
+# GitHub Actions Workflow für Node.js CI/CD
+# Weitere Informationen: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github
+
+name: Node.js CI  # Name des Workflows
+
+on:  # Trigger-Ereignisse
+  push:
+    branches:
+      - main  # Auslösen bei Push auf den 'main'-Branch
+  pull_request:
+    branches:
+      - main  # Auslösen bei Pull Requests auf den 'main'-Branch
+
+jobs:  # Job-Definitionen
+  build:  # Name des Jobs
+    runs-on: ubuntu-latest  # Ausführungsumgebung
+
+    strategy:  # Strategie für die Matrix-Builds
+      matrix:
+        node-version: [18.x]  # Node.js Versionen
+
+    steps:  # Auszuführende Schritte
+      - name: Checkout Code
+        uses: actions/checkout@v2  # Checkout des Repository-Codes
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1  # Node.js Setup
+        with:
+          node-version: ${{ matrix.node-version }}  # Verwendung der Node.js Version aus der Matrix
+
+      - name: Install Dependencies
+        run: npm ci  # Installieren der NPM-Abhängigkeiten
+
+      - name: Run Build
+        run: npm run build --if-present  # Ausführen des Build-Prozesses, falls vorhanden
